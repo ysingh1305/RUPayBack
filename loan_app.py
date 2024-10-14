@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
-# Assumed Federal Poverty Line (FPL) for a household size of 1
-FPL = 14580  # FPL can vary based on household size and region
 
-# Custom CSS for Red Labels and Black Text in Input Fields
+FPL = 14580 
+
+
 st.markdown("""
     <style>
     body {
@@ -50,7 +50,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Function to calculate discretionary income and IDR payments
+
 def calculate_idr_payment(agi, fpl):
     discretionary_income = agi - (1.5 * fpl)
     if discretionary_income < 0:
@@ -58,7 +58,7 @@ def calculate_idr_payment(agi, fpl):
     monthly_payment = (0.10 * discretionary_income) / 12
     return max(monthly_payment, 0)
 
-# Function to calculate loan repayment with adjustable frequency and correct IDR
+
 def calculate_repayment(loan_amount, interest_rate, term_years, repayment_type, frequency, agi):
     if repayment_type == 'Income-driven':
         term_years = 20
@@ -111,7 +111,7 @@ def calculate_repayment(loan_amount, interest_rate, term_years, repayment_type, 
 
     return pd.DataFrame(payments), payment, total_interest_paid, period
 
-# Function to calculate refinanced loan repayment
+
 def calculate_refinanced_loan(loan_amount, new_interest_rate, new_term_years, frequency, repayment_type, agi):
     if repayment_type == 'Income-driven':
         new_term_years = 20
@@ -146,10 +146,10 @@ def calculate_refinanced_loan(loan_amount, new_interest_rate, new_term_years, fr
 
     return payment, total_interest_paid, period, refinanced_balances[:-1]
 
-# Streamlit layout
+
 st.title("💸 RUPAYBACK - Student Loan Repayment Optimizer 💸")
 
-# Sidebar styling for loan input and repayment options
+
 with st.sidebar:
     st.header("Loan Details 💼")
     loan_amount = st.number_input("Loan Amount ($)", value=10000.0, step=1000.0)
@@ -165,7 +165,7 @@ with st.sidebar:
 
     loan_start_date = st.date_input("Loan Start Date")
 
-# Calculate and show repayment details
+
 df, payment, total_interest_paid, periods_to_payoff = calculate_repayment(loan_amount, interest_rate, term_years, repayment_type, payment_frequency, agi)
 
 if payment_frequency == 'Weekly':
@@ -190,7 +190,7 @@ st.markdown("""
     </div>
 """.format(payment, payment_frequency.lower(), total_interest_paid, periods_to_payoff, payment_frequency.lower(), loan_end_date.strftime('%B %d, %Y'), total_loan_cost), unsafe_allow_html=True)
 
-# Add repayment plan description based on user selection
+
 if repayment_type == 'Standard':
     st.write("""
     ### Standard Repayment Plan 💼
@@ -207,7 +207,7 @@ elif repayment_type == 'Income-driven':
     - This option can make payments more manageable, especially for borrowers with lower income.
     """)
 
-# Display the repayment schedule
+
 st.write("#### Repayment Schedule 📅")
 st.dataframe(df.style.set_properties(**{
     'background-color': 'white',
@@ -215,10 +215,9 @@ st.dataframe(df.style.set_properties(**{
     'border': 'none'
 }))
 
-# Insert Section Line
+
 st.markdown("---")
 
-# Debt-to-Income Ratio Over Time
 df['Debt-to-Income Ratio'] = (df['Remaining Balance'] / total_income) * 100
 
 st.write("#### Debt-to-Income Ratio Over Time 📉")
@@ -230,7 +229,6 @@ plt.title(f"Debt-to-Income Ratio Over Time ({payment_frequency} Payments)")
 plt.xticks(rotation=45)
 st.pyplot(plt)
 
-# Accumulated Principal, Interest, and Remaining Balance Graph
 st.write("#### Accumulated Principal, Interest, and Remaining Balance 📉")
 plt.figure(figsize=(10, 6))
 plt.plot(df["Period"], df["Accumulated Principal Paid"], label='Accumulated Principal Paid', color='blue', linewidth=2)
@@ -243,30 +241,28 @@ plt.xticks(rotation=45)
 plt.legend()
 st.pyplot(plt)
 
-# Pie Chart: Breakdown of Total Loan Costs (Principal vs. Interest)
+
 st.write("#### Breakdown of Total Loan Costs 🍰")
 plt.figure(figsize=(8, 8))
 
-# Data for pie chart
+
 total_principal = loan_amount
 total_interest = total_interest_paid
 labels = ['Principal', 'Interest']
 sizes = [total_principal, total_interest]
 colors = ['#66b3ff', '#ff9999']
 
-# Plot pie chart
+
 plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140)
 
-# Set title
 plt.title("Total Loan Cost Breakdown (Principal vs. Interest)")
 
-# Show the plot
+
 st.pyplot(plt)
 
-# Insert Section Line
+
 st.markdown("---")
 
-# Refinancing Section
 refinance_checkbox = st.checkbox("Show Refinancing Options")
 
 if refinance_checkbox:
@@ -317,10 +313,10 @@ if refinance_checkbox:
     plt.legend()
     st.pyplot(plt)
 
-# Insert Section Line
+
 st.markdown("---")
 
-# Helpful Information Section
+
 st.write("### Helpful Information about Student Loans 🎓")
 
 st.markdown("""
